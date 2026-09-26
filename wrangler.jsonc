@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Worker gerado pelo OpenNext a partir do build do Next.js
+  "name": "lp-genos-ebook",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      // Referência ao próprio Worker, exigida pelo OpenNext (o nome precisa ser igual ao "name")
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "lp-genos-ebook"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+
+  // LEAD_WEBHOOK_URL e CHECKOUT_URL ficam como variáveis/secrets do Worker (ver .env.example).
+  //
+  // A rota (genosgroup.com.br/ebook*) NÃO é declarada aqui de propósito: rotas e
+  // domínios ficam no painel da Cloudflare, em Settings > Domains & Routes,
+  // assim o deploy nunca mexe no domínio sem querer.
+}
