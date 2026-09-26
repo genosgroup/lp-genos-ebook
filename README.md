@@ -63,4 +63,5 @@ O projeto já está configurado para o Cloudflare Workers com o adaptador [OpenN
 - **Automático:** cada push na `main` publica pelo GitHub Actions (`.github/workflows/deploy.yml`). O repositório precisa dos segredos `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID` em *Settings > Secrets and variables > Actions*.
 - **Manual:** `npx wrangler login` e depois `npm run deploy`.
 - **Variáveis:** `LEAD_WEBHOOK_URL` e `CHECKOUT_URL` ficam no Worker, configuradas uma vez com `npx wrangler secret put NOME` (ou no painel, em *Workers > lp-genos-ebook > Settings > Variables and Secrets*). O deploy não mexe nelas.
-- **Rota:** a rota `genosgroup.com.br/ebook*` é ligada ao Worker no painel da Cloudflare (*Settings > Domains & Routes*), e não no `wrangler.jsonc`.
+- **Rota:** `genosgroup.com.br/ebook*` aponta para este Worker (Cloudflare > *Workers Routes* da zona `genosgroup.com.br`), e não no `wrangler.jsonc`. O resto do domínio (`genosgroup.com.br/*`) vai para o Worker `lp-genos-principal`. Enquanto o WordPress não é cancelado, há rotas sem Worker que ainda levam ao WordPress as páginas antigas (`/obrigado*`, `/thanks-pv*`, `/politica-de-privacidade*`, `/links*`, `/wp-*` etc.); ao cancelar, elas precisam ser removidas ou as páginas migradas.
+- **workers.dev:** https://lp-genos-ebook.group-656.workers.dev/ebook/ (a raiz redireciona para `/ebook/`).
