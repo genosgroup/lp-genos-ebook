@@ -3,6 +3,7 @@
 import { useState, type SubmitEvent } from "react";
 import { FORM_ID, FORM_MESSAGES, FORM_NAME, LEAD_FIELDS, type LeadResponse } from "@/lib/lead-form";
 import { BASE_PATH } from "@/lib/site";
+import { registrarLead } from "@/lib/conversao";
 import { SpinnerIcon } from "./icons";
 
 type Message = { type: "success" | "danger"; text: string };
@@ -39,6 +40,11 @@ export default function LeadForm() {
       const result = (await response.json()) as LeadResponse;
 
       if (result.success) {
+        // Antes do redirect, e so depois da resposta de sucesso: envio que
+        // falhou validacao ou webhook nao e lead, e conta-lo inflaria a
+        // conversao. O redirect leva a pagina embora, entao o evento tem
+        // que sair primeiro.
+        registrarLead(FORM_NAME);
         form.reset();
         setMessage({ type: "success", text: result.data.message });
         // Ação "Redirecionar" do Elementor: leva ao checkout
