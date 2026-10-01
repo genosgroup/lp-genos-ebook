@@ -1,33 +1,41 @@
 import Script from "next/script";
 
 /**
- * Mesmas tags do site original:
- * - Google tag GT-552FQVS (antes inserida pelo Site Kit)
- * - Google Tag Manager GTM-WBJTM4T2
- * - Pixel da Meta 624880005754303 (antes via PixelYourSite / Meta for WordPress)
- * - Google Analytics 4 G-X2G6KW4TNY (script inserido no rodapé desta página)
+ * Medicao da LP.
+ *
+ * GA4 e Pixel sao os mesmos do resto do dominio, de proposito: uma
+ * propriedade e um Pixel para a Genos inteira. Propriedade por LP parte o
+ * funil em pedacos que nao somam, e Pixel por LP fragmenta o aprendizado
+ * e deixa cada publico pequeno demais para a Meta otimizar.
+ *
+ * O que saiu: GT-552FQVS (que carregava a propriedade G-VH9KE2YJM6) e o
+ * conteiner GTM-WBJTM4T2, herdados do Site Kit na migracao do WordPress.
+ * As propriedades do GA4 por tras deles nao aparecem em conta nenhuma da
+ * Genos — eram dados da empresa indo para painel de terceiro, com um
+ * acesso que pode acabar sem aviso. Mesma limpeza ja feita no site
+ * principal.
+ *
+ * Como no site principal, a remocao nao podia ser so subtracao: esta LP
+ * tem formulario de lead e NAO tinha nenhum evento de conversao no
+ * codigo, entao a conversao morava dentro do conteiner removido. Ela
+ * volta em src/lib/conversao.ts, disparada pelo LeadForm.
+ *
+ * O content_group separa esta LP das outras paginas nos relatorios sem
+ * depender de filtro por URL.
  */
-const GOOGLE_TAG_ID = "GT-552FQVS";
-const GTM_ID = "GTM-WBJTM4T2";
+const GA_ID = "G-X2G6KW4TNY";
 const META_PIXEL_ID = "624880005754303";
-const GA4_ID = "G-X2G6KW4TNY";
+const CONTENT_GROUP = "LP · Ebook";
 
 export default function Tracking() {
   return (
     <>
-      <Script src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_TAG_ID}`} strategy="afterInteractive" />
-      <Script id="google-tag" strategy="afterInteractive">
+      <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+      <Script id="google-analytics" strategy="afterInteractive">
         {`window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}
 gtag("set","linker",{"domains":["genosgroup.com.br"]});
 gtag("js", new Date());
-gtag("config", "${GOOGLE_TAG_ID}");`}
-      </Script>
-      <Script id="google-tag-manager" strategy="afterInteractive">
-        {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${GTM_ID}');`}
+gtag("config", "${GA_ID}", {content_group: "${CONTENT_GROUP}"});`}
       </Script>
       <Script id="meta-pixel" strategy="afterInteractive">
         {`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -38,13 +46,6 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '${META_PIXEL_ID}');
 fbq('track', 'PageView');`}
       </Script>
-      <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`} strategy="afterInteractive" />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', '${GA4_ID}');`}
-      </Script>
     </>
   );
 }
@@ -52,12 +53,6 @@ gtag('config', '${GA4_ID}');`}
 export function TrackingNoScript() {
   return (
     <noscript>
-      <iframe
-        src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-        height="0"
-        width="0"
-        style={{ display: "none", visibility: "hidden" }}
-      />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         height="1"
